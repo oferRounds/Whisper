@@ -35,7 +35,7 @@ class WhisperFactory: NSObject {
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
   }
 
-  func craft(message: Message, navigationController: UINavigationController, action: WhisperAction) {
+    func craft(message: Message, navigationController: UINavigationController, action: WhisperAction) -> UILabel {
     self.navigationController = navigationController
     self.navigationController?.delegate = self
     presentTimer.invalidate()
@@ -72,11 +72,13 @@ class WhisperFactory: NSObject {
     } else {
       switch action {
       case .Present:
-        presentView()
+        presentView(duration: message.duration)
       case .Show:
-        showView()
+        showView(duration: message.duration)
       }
     }
+        
+        return whisperView.titleLabel
   }
 
   func silentWhisper(controller: UINavigationController, after: NSTimeInterval) {
@@ -102,25 +104,29 @@ class WhisperFactory: NSObject {
   }
 
   // MARK: - Presentation
+    
+    func presentView(duration duration: NSTimeInterval) {
+        moveControllerViews(true)
+        
+        UIView.animateWithDuration(AnimationTiming.movement, animations: {
+            self.whisperView.frame.size.height = WhisperView.Dimensions.height
+            for subview in self.whisperView.transformViews {
+                subview.frame.origin.y = 0
+                
+                if subview == self.whisperView.complementImageView {
+                    subview.frame.origin.y = (WhisperView.Dimensions.height - WhisperView.Dimensions.imageSize) / 2
+                }
+                
+                subview.alpha = 1
+            }
+        })
+    }
 
   func presentView() {
-    moveControllerViews(true)
-
-    UIView.animateWithDuration(AnimationTiming.movement, animations: {
-      self.whisperView.frame.size.height = WhisperView.Dimensions.height
-      for subview in self.whisperView.transformViews {
-        subview.frame.origin.y = 0
-
-        if subview == self.whisperView.complementImageView {
-          subview.frame.origin.y = (WhisperView.Dimensions.height - WhisperView.Dimensions.imageSize) / 2
-        }
-
-        subview.alpha = 1
-      }
-    })
+    self.presentView(duration: AnimationTiming.movement)
   }
 
-  func showView() {
+  func showView(duration duration: NSTimeInterval) {
     moveControllerViews(true)
 
     UIView.animateWithDuration(AnimationTiming.movement, animations: {
@@ -135,10 +141,14 @@ class WhisperFactory: NSObject {
         subview.alpha = 1
       }
       }, completion: { _ in
-        self.delayTimer = NSTimer.scheduledTimerWithTimeInterval(1.5, target: self,
+        self.delayTimer = NSTimer.scheduledTimerWithTimeInterval(duration, target: self,
           selector: #selector(WhisperFactory.delayFired(_:)), userInfo: nil, repeats: false)
     })
   }
+    
+    func showView() {
+        self.showView(duration: AnimationTiming.movement)
+    }
 
   func changeView(message: Message, action: WhisperAction) {
     presentTimer.invalidate()
@@ -153,7 +163,7 @@ class WhisperFactory: NSObject {
     var array = ["title": title, "textColor" : textColor, "backgroundColor": backgroundColor, "action": action]
     if let images = message.images { array["images"] = images }
 
-    presentTimer = NSTimer.scheduledTimerWithTimeInterval(AnimationTiming.movement * 1.1, target: self,
+    presentTimer = NSTimer.scheduledTimerWithTimeInterval(message.duration > 0 ? message.duration : AnimationTiming.movement, target: self,
       selector: #selector(WhisperFactory.presentFired(_:)), userInfo: array, repeats: false)
   }
 

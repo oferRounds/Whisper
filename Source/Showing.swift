@@ -1,7 +1,7 @@
 import UIKit
 
-public func show(whisper message: Message, to: UINavigationController, action: WhisperAction = .Show) {
-  whisperFactory.craft(message, navigationController: to, action: action)
+public func show(whisper message: Message, to: UINavigationController, action: WhisperAction = .Show) -> UILabel {
+  return whisperFactory.craft(message, navigationController: to, action: action)
 }
 
 public func hide(whisperFrom from: UINavigationController, after: NSTimeInterval = 0) {

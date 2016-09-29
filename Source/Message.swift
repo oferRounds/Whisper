@@ -6,12 +6,14 @@ public struct Message {
   public var textColor: UIColor
   public var backgroundColor: UIColor
   public var images: [UIImage]?
+  public var duration: NSTimeInterval
 
-  public init(title: String, textColor: UIColor = UIColor.whiteColor(), backgroundColor: UIColor = UIColor.lightGrayColor(), images: [UIImage]? = nil) {
+  public init(title: String, textColor: UIColor = UIColor.whiteColor(), backgroundColor: UIColor = UIColor.lightGrayColor(), images: [UIImage]? = nil, duration: NSTimeInterval = 2) {
     self.title = title
     self.textColor = textColor
     self.backgroundColor = backgroundColor
     self.images = images
+    self.duration = duration
   }
 }
 
