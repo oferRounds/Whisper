@@ -35,7 +35,7 @@ class WhisperFactory: NSObject {
     NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
   }
 
-  func craft(_ message: Message, navigationController: UINavigationController, action: WhisperAction) {
+  func craft(_ message: Message, navigationController: UINavigationController, action: WhisperAction) -> UILabel {
     self.navigationController = navigationController
     self.navigationController?.delegate = self
     presentTimer.invalidate()
@@ -105,10 +105,10 @@ class WhisperFactory: NSObject {
 
   // MARK: - Presentation
     
-    func presentView(duration duration: NSTimeInterval) {
+    func presentView(duration: TimeInterval) {
         moveControllerViews(true)
         
-        UIView.animateWithDuration(AnimationTiming.movement, animations: {
+        UIView.animate(withDuration: AnimationTiming.movement, animations: {
             self.whisperView.frame.size.height = WhisperView.Dimensions.height
             for subview in self.whisperView.transformViews {
                 subview.frame.origin.y = 0
@@ -139,7 +139,7 @@ class WhisperFactory: NSObject {
     })
   }
 
-  func showView(duration duration: NSTimeInterval) {
+  func showView(duration: TimeInterval) {
     moveControllerViews(true)
 
     UIView.animate(withDuration: AnimationTiming.movement, animations: {
